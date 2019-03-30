@@ -77,12 +77,19 @@ WSGI_APPLICATION = 'sas_apps_dramatiq.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-        'OPTIONS': {
-            'timeout': 60,
-        }
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'dramatiq_test',
+        'USER': 'django',
+        'PASSWORD': 'django',
+        'HOST': '127.0.0.1',
     }
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.sqlite3',
+    #     'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    #     'OPTIONS': {
+    #         'timeout': 60,
+    #     }
+    # }
 }
 
 
@@ -124,6 +131,8 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+DRAMATIQ_ENCODER = "dramatiq.encoder.PickleEncoder"
+DRAMATIQ_TASKS_DATABASE = 'default'
 DRAMATIQ_BROKER = {
     "BROKER": "dramatiq.brokers.stub.StubBroker",
     "OPTIONS": {},
@@ -136,4 +145,27 @@ DRAMATIQ_BROKER = {
         "django_dramatiq.middleware.AdminMiddleware",
         "django_dramatiq.middleware.DbConnectionsMiddleware",
     ]
+}
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '%(levelname)s %(asctime)s %(module)s %(process)d '
+                      '%(thread)d %(message)s',
+        },
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
+        },
+    },
+    'loggers': {
+        '': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+        },
+    },
 }
