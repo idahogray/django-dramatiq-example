@@ -46,6 +46,7 @@ class DramatiqTestCaseCloseConnTeardown(DramatiqTestCase):
 
 class DramatiqTaskTest(DramatiqTestCaseCloseConnTeardown):
     def test_send_email_task(self):
+        a_model = AModel.objects.create(a_field='Test Field')
         send_email_1.send('This is a test subject')
         send_email_2.send('This is a test subject')
         send_email_3.send('This is a test subject')
@@ -61,6 +62,7 @@ class DramatiqTaskTest(DramatiqTestCaseCloseConnTeardown):
         self.assertEqual(mail.outbox[0].body, 'This is a test body')
 
     def test_send_email_view(self):
+        a_model = AModel.objects.create(a_field='Test Field')
         self.client.get('/dramatiq/send_email/')
         for queue in self.broker.get_declared_queues():
             self.broker.join(queue)
@@ -68,7 +70,7 @@ class DramatiqTaskTest(DramatiqTestCaseCloseConnTeardown):
         self.assertEqual(len(mail.outbox), 5)
         self.assertIn('idahogray@gmail.com', mail.outbox[0].to)
         self.assertEqual(mail.outbox[0].from_email, 'idahogray@gmail.com')
-        self.assertEqual(mail.outbox[0].subject, 'View Subject')
+        self.assertEqual(mail.outbox[0].subject, 'View Subject 1')
         self.assertEqual(mail.outbox[0].body, 'This is a test body')
 
     def test_send_email_view_with_db(self):
